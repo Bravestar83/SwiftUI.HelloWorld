@@ -46,7 +46,7 @@ struct ContentView: View {
                         .foregroundColor(.blue)
                     
                     // App title
-                    Text("Hello World App")
+                    Text("Marshall Says Hello World")
                         .font(.title)
                         .bold()
                     
