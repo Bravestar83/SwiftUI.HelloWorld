@@ -1,88 +1,74 @@
-//
-//  ContentView.swift
-//  HelloWorld
-//
-//  Created by Marshall on 2025/05/16.
-//
-
 import SwiftUI
 
 struct ContentView: View {
-    // User input and selection
-    @State private var name = ""
-    @State private var selectedLanguage = "English"
+    @State private var name: String = ""
+    @State private var selectedLanguage: String = "English"
     @State private var showGreeting = false
     
-    // Supported languages and greetings
     let languages = ["English", "German", "Spanish", "isiXhosa", "Zulu"]
-    let greetings = [
-        "English": "Hello",
-        "German": "Hallo",
-        "Spanish": "Hola",
-        "isiXhosa": "Molo",
-        "Zulu": "Sawubona"
-    ]
     
     var body: some View {
-        if showGreeting {
-            // Greeting screen
-            VStack(spacing: 40) {
-                Text("\(greetings[selectedLanguage] ?? "Hello") \(name)")
+        VStack(spacing: 20) {
+            if showGreeting {
+                Text(greeting(for: selectedLanguage, name: name))
                     .font(.largeTitle)
                     .padding()
                 
                 Button("Try Again") {
-                    // Reset and go back
+                    showGreeting = false
                     name = ""
                     selectedLanguage = "English"
-                    showGreeting = false
                 }
                 .padding()
-                .background(Color.blue.opacity(0.8))
-                .foregroundColor(.white)
-                .cornerRadius(10)
-            }
-            .padding()
-        } else {
-            // Input screen
-            VStack(spacing: 20) {
-                Text("Enter your name:")
-                    .font(.headline)
+            } else {
+                // App icon
+                Image(systemName: "globe")
+                    .resizable()
+                    .frame(width: 100, height: 100)
+                    .padding(.top)
                 
-                TextField("Your name", text: $name)
+                // App title
+                Text("Marshall's Hello World")
+                    .font(.title)
+                    .bold()
+                
+                // Name input
+                TextField("Enter your name", text: $name)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal)
                 
-                Text("Choose language:")
-                    .font(.headline)
-                
+                // Language picker
                 Picker("Language", selection: $selectedLanguage) {
-                    ForEach(languages, id: \.self) { lang in
-                        Text(lang)
+                    ForEach(languages, id: \.self) { language in
+                        Text(language)
                     }
                 }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal)
+                .pickerStyle(.wheel)
+                .frame(height: 120)
                 
-                Button("Say Hello") {
-                    // Show greeting screen
-                    if !name.isEmpty {
-                        showGreeting = true
-                    }
+                // Submit button
+                Button("Submit") {
+                    showGreeting = true
                 }
-                .disabled(name.isEmpty)
                 .padding()
-                .background(name.isEmpty ? Color.gray : Color.blue.opacity(0.8))
-                .foregroundColor(.white)
-                .cornerRadius(10)
+                .disabled(name.isEmpty)
             }
-            .padding()
+        }
+        .animation(.easeInOut, value: showGreeting)
+        .padding()
+    }
+    
+    func greeting(for language: String, name: String) -> String {
+        switch language {
+        case "German": return "Hallo, \(name)!"
+        case "Spanish": return "¡Hola, \(name)!"
+        case "isiXhosa": return "Molo, \(name)!"
+        case "Zulu": return "Sawubona, \(name)!"
+        default: return "Hello, \(name)!"
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
 }
