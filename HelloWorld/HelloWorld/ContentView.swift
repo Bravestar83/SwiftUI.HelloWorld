@@ -4,6 +4,7 @@ struct ContentView: View {
     @State private var name: String = ""
     @State private var selectedLanguage: String = "English"
     @State private var showGreeting = false
+    @State private var ipAddress: String = "Loading..."
     
     let languages = ["English", "German", "Spanish", "isiXhosa", "French"]
     let languageFlags = [
@@ -25,6 +26,14 @@ struct ContentView: View {
                         Text(greeting(for: selectedLanguage, name: name))
                             .font(.largeTitle)
                             .padding()
+                        
+                        Text(fromText(for: selectedLanguage))
+                            .font(.title3)
+                            .padding(.top, 1)
+                        
+                        Text(ipAddress)
+                            .font(.title2)
+                            .bold()
                     }
                     .transition(.scale.combined(with: .opacity))
                     
@@ -69,6 +78,7 @@ struct ContentView: View {
                     
                     // Submit button
                     Button("Submit") {
+                        fetchIPAddress()
                         withAnimation {
                             showGreeting = true
                         }
@@ -92,6 +102,9 @@ struct ContentView: View {
                     .padding(.bottom, 8)
             }
         }
+        .onAppear {
+            fetchIPAddress()
+        }
     }
     
     func greeting(for language: String, name: String) -> String {
@@ -102,6 +115,32 @@ struct ContentView: View {
         case "French": return "Bonjour, \(name)!"
         default: return "Hello, \(name)!"
         }
+    }
+    
+    func fromText(for language: String) -> String {
+        switch language {
+        case "German": return "Von"
+        case "Spanish": return "Desde"
+        case "isiXhosa": return "Ukusuka"
+        case "French": return "De"
+        default: return "From"
+        }
+    }
+    
+    func fetchIPAddress() {
+        guard let url = URL(string: "https://api.ipify.org") else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let data = data, let ip = String(data: data, encoding: .utf8) {
+                DispatchQueue.main.async {
+                    self.ipAddress = ip
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.ipAddress = "Could not fetch IP"
+                }
+            }
+        }.resume()
     }
 }
 
